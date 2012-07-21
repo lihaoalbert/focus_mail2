@@ -1,0 +1,21 @@
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="#">Focus Mail</a>
+      <div class="container nav-collapse">
+        <ul class="nav">
+          <li><%= link_to "首页", root_path  %></li>
+          <li><%= link_to "创建名单", lists_path  %></li>
+          <li><%= link_to "邮件模板", templates_path  %></li>
+          <li><%= link_to "活动管理", campaigns_path  %></li>
+          <li><%= link_to "数据分析", tracks_path  %></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>

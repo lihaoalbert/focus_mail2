@@ -1,0 +1,33 @@
+<%- model_class = Campaign.new.class -%>
+<div id="templates_title" style="margin-bottom: 20px">
+<h1  style="display:inline"><%=t '.title', :default => model_class.model_name.human.pluralize %></h1>
+  <div style="float:right">
+    <%= link_to 'Add a Campaign', new_campaign_path, :class => 'btn btn-primary', remote: true %>
+  </div>
+  
+<table class="table table-striped" id="campaigns">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Subject</th>
+      <th>Template</th>
+      <th>Click</th>
+      <th>Track</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @campaigns.each do |campaign| %>
+      <%= render campaign %>
+    <% end %>
+  </tbody>
+</table>
+
+<hr />
+
+<div id="form">
+ <div id="campaign_report"></div>
+ <div id="click_report"></div>
+ <div id="click_two"></div>
+</div>
+

@@ -1,0 +1,20 @@
+$("#form").html("<%= j render "form" %>").hide().fadeIn();
+
+var display_campaign_entries;
+$(function() {  
+  return $('form #campaign_template_id').chosen().change(function() {    
+     return display_campaign_entries("<%= @campaign && @campaign.id || 0 %>", 
+                                     $("form #campaign_template_id").val());  
+         });
+});
+     
+display_campaign_entries = function(campaign_id, template_id) {  
+   return $.ajax({    
+     url: 'campaigns/template_entries/' + campaign_id + "/" + template_id,    
+     type: 'GET',    
+     dateType: 'script'  
+     });
+}; 
+ 
+$('#campaign_submit').focus();
+$('#campaign_name').focus();
