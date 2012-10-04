@@ -1,18 +1,17 @@
-*.gem
-*.rbc
-.bundle
-.config
-coverage
-InstalledFiles
-lib/bundler/man
-pkg
-rdoc
-spec/reports
-test/tmp
-test/version_tmp
+<<<<<<< HEAD
+*.class
+*.pyc
+*.pyo
+=======
+/.bundle
+/db/*.sqlite3
+/log/*.log
+/tmp
+/config/database.yml
+/.sass-cache
+/dump.rdb
+>>>>>>> 1aeea4fbec08df575c783f8db0eefd8906c9da77
+public
+log
 tmp
-
-# YARD artifacts
-.yardoc
-_yardoc
-doc/
+vendor

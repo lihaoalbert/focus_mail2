@@ -1,0 +1,25 @@
+<%- model_class = Useradmin.new.class -%>
+<h1><%=t '.title', :default => model_class.model_name.human.pluralize %></h1>
+<div style="float:right" class="hidden">
+  <%= link_to 'Add a User', new_useradmin_path, :class => 'btn', remote: true %>
+</div>
+<div id="form"></div>
+<table class="table table-striped" id="lists">
+  <thead>
+    <tr>
+      <th>Email名称</th>
+      <th>样本管理</th>
+      <th>管理发送</th>
+      <th>报表查询</th>
+      <th>邮件列表</th>
+      <th>权限列表</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @useradmins.each do |useradmin| %>
+      <%= render useradmin %>
+    <% end %>
+  </tbody>
+</table>
+
+<hr />

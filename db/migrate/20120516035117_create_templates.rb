@@ -3,7 +3,9 @@ class CreateTemplates < ActiveRecord::Migration
     create_table :templates do |t|
       t.string :name
       t.string :file_name
-      t.integer :img_url, :default => 1
+      t.integer :img_url, :default => 2
+      t.string :zip_url
+      t.string :zip_name
       t.timestamps
     end
   end

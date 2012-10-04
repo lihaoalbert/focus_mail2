@@ -1,0 +1,16 @@
+<tr id="user_<%= useradmin.asset_id %>">
+  <td><%= useradmin.user.email %></td>
+  <% user_permission(useradmin.asset_id).each do |permission| %>
+  <td><%= permission.type_user == 1 ? "启用" : "停止" %></td>
+  <% end %>
+  <td>
+    <%= link_to 'Edit', edit_useradmin_path(useradmin.asset_id), :class => 'btn btn-mini', :remote => true %>
+    <%= link_to 'Del', useradmin_path(useradmin.asset_id), :method => :delete,
+      :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger', :remote => true %>
+  </td>
+</tr>
+<tr id="uadmin<%= useradmin.asset_id %>" class="hidden">
+	<td colspan="5">
+		<div id="useradmin_form<%= useradmin.asset_id %>"></div>
+	</td>
+</tr>

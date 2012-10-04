@@ -1,1 +1,16 @@
 $("#<%= dom_id @template %> .template_form").html("<%= j render "form" %>");
+$("#fjzip").click(function(){
+	if($(this).text() == "附件上传")
+	{
+		$("#htmlsource").addClass("hidden");
+		$("#zipfile").removeClass("hidden");
+		$(this).text("内容填写");
+	}
+	else
+	{
+		$("#htmlsource").removeClass("hidden");
+		$("#zipfile").removeClass("hidden");
+		$(this).text("附件上传");
+	}
+});
+

@@ -1,14 +1,52 @@
-<tr id="<%= dom_id campaign %>">
-  <td><%= campaign.name %></td>
-  <td><%= campaign.subject %></td>
-  <td><%= campaign.template.try(:name) %></td>
-  <td><%= campaign.click.count %></td>
-  <td><%= campaign.track.count %></td>
-  <td>
-    <%= link_to 'Deliver', deliver_campaign_path(campaign.id), :class => 'btn btn-mini btn-primary', :remote => true %>
-    <%= link_to 'Edit', edit_campaign_path(campaign), :class => 'btn btn-mini', :remote => true %>
-    <%= link_to 'Report', {:controller=>'report',:action=>'campaign',:id=>campaign.id}, :class => 'btn btn-mini btn-primary', :target => '_blank' %>
-    <%= link_to 'Destroy', campaign_path(campaign), :method => :delete,
-      :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger', :remote => true %>
-  </td>
-</tr>
+
+		  		<!--单条发送活动 -->
+			  	<div class="js-stream-item stream-item" id="<%= dom_id campaign %>" data-item-type="tweet" media="true"> 
+		    		<div class="stream-item-content tweet" id=<%="l-" + campaign.id.to_s %> data-is-reply-to="false" >
+		    			
+		      			<div class="focus-content">
+    						<div class="tweet-row">
+							  <span class="campaign-name">
+							    主题：<%= campaign.subject %>
+							  </span>
+							</div>
+							<div class="tweet-row">
+				  			  <div class="tweet-text js-tweet-text">
+				  			  	创建时间：<%= campaign.created_at.strftime("%y/%m/%d") %>
+				  			  	发送时间：<strong> <%= campaign.created_at.strftime("%y/%m/%d") %> </strong>
+				  			  </div>
+							</div>
+							<div class="tweet-row">
+				  			  <div class="tweet-text js-tweet-text">
+				  			  	收件人总数: <strong><%= get_campaign_summery(campaign.id)[:send_totle] %> </strong>				      			  		
+				  			  		
+				  			  	信件模板：<strong> <%= campaign.template.try(:name) %> </strong>
+				  			  </div>
+							</div>
+							<div class="tweet-row" >
+				  			  <%= link_to '发送', deliver_campaign_path(campaign.id), :class => "btn btn-mini btn-primary #{campaign.from_time == nil ? '' : 'hidden' }", :remote => true %>
+						      <%= link_to '修改', edit_campaign_path(campaign), :class => 'btn btn-mini', :remote => true %>
+							  <%= link_to '删除', campaign_path(campaign), :method => :delete,
+						        :confirm => '不可恢复，确定要删除吗?', :class => 'btn btn-mini btn-danger', :remote => true %>
+							  <%= link_to '发送测试', "#myModal_#{campaign.id}", :class => 'btn btn-mini btn-primary', :"data-toggle" => "modal", :remote => true %>
+							</div>
+							<div id="myModal_<%= campaign.id %>" class="modal fade">
+							  <div class="modal-header">
+							  	<button type="button" class="close" data-dismiss="modal">×</button>
+							  	<h3>Send Test</h3>
+							  </div>
+							  <div class="modal-body">
+							  	<%= label_tag "email_name#{campaign.id}", "测试邮箱：", :class => 'control-label' %>
+						         <div class="controls">  
+						           <%= text_field_tag "email_name#{campaign.id}", current_user.email, :class => 'text_field' %>  
+						         </div>  
+							  </div>
+							  <div class="modal-footer">
+							  	<a href="#" id="schange" class="btn btn-primary" data-dismiss="modal" onclick="mail_test(<%= campaign.id %>);">发送测试信 </a>
+							  	<a href="#" class="btn" data-dismiss="modal">关闭</a>
+							  </div>
+							</div>  
+
+				        </div>
+					</div>
+				</div>
+				<!--单条发送活动 结束-->       

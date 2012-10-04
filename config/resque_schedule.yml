@@ -1,0 +1,6 @@
+JobSendLog:
+  every: 5m
+  class: Job_send_log
+  args: 
+  description: JobSendLog
+

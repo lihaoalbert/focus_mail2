@@ -133,7 +133,9 @@ class ReportController < ApplicationController
       @data_x = Array.new
       @data_click = Array.new
     if campaign_id.nil?
-      @id_array = klazz.find(:all,:select => "DISTINCT #{entry}.campaign_id AS CampaignId")
+      @id_array = klazz.find(:all,
+        :select => "DISTINCT #{entry}.campaign_id AS CampaignId",
+        :joins =>"INNER JOIN campaigns ON campaigns.id = #{entry}.campaign_id")
       datax = Array.new
           @id_array.each do |template_id| 
               @report_click.push(get_campaign_report_by_id(template_id.CampaignId)) 

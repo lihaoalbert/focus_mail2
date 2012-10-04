@@ -1,0 +1,15 @@
+$("#uadmin<%= @user.id %>").removeClass('hidden');
+$("#useradmin_form<%= @user.id %>").html("<%= j render :partial => 'form' %>");
+function buntf(bunstr, hidstr)
+{
+	if($(hidstr).val() == 1)
+	{
+		$(hidstr).val("0");
+		$(bunstr).text("停止");
+	}
+	else
+	{
+		$(hidstr).val("1");
+		$(bunstr).text("启动");
+	}
+}

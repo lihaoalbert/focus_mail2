@@ -10,11 +10,29 @@
       <div class="container nav-collapse">
         <ul class="nav">
           <li><%= link_to "首页", root_path  %></li>
-          <li><%= link_to "创建名单", lists_path  %></li>
-          <li><%= link_to "邮件模板", templates_path  %></li>
-          <li><%= link_to "活动管理", campaigns_path  %></li>
-          <li><%= link_to "数据分析", tracks_path  %></li>
         </ul>
+        <ul class="nav">
+          <li><%= link_to "邮件列表", lists_path %></li>
+        </ul>
+        <ul class="nav">
+        	<li><%= link_to "邮件样板", templates_path %></li>
+        </ul>
+        <ul class="nav">
+        	<li><%= link_to "发送设置", campaigns_path %></li>
+        </ul>
+        <% if @super == 1 then %>
+        <ul class="nav">
+        	<li><%= link_to "权限设定", useradmins_path %></li>
+        </ul>
+        <% end %>
+        <ul class="nav" style="float: right">
+        	<% if user_signed_in? %>
+        	<li><%= link_to current_user.email , useradmins_path %></li>
+			<li>
+				<%= link_to "登出", destroy_user_session_path, :method => :delete%>
+			</li>
+			<% end %>
+		</ul>
       </div><!--/.nav-collapse -->
     </div>
   </div>

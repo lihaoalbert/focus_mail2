@@ -1,5 +1,5 @@
 class Campaign < ActiveRecord::Base
-  attr_accessible :from_email, :from_name, :name, :subject, :list_ids, :template_id, :entry
+  attr_accessible :from_email, :from_name, :name, :subject, :list_ids, :template_id, :entry, :from_time
 
   has_many :campaign_lists
   has_many :lists, :through => :campaign_lists, uniq: true

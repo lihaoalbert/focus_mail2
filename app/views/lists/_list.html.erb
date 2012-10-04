@@ -1,7 +1,7 @@
 <tr id="<%= dom_id list %>">
   <td><%= link_to list.name, list_path(list) %></td>
   <td><%= list.members.size %></td>
-  <td><%=l list.created_at %></td>
+  <td><%= list.created_at.strftime("%F %T") %></td>
   <td>
     <%= link_to 'Import Mem', members_imexport_path(list.id), :class => 'btn btn-mini' %>
     <%= link_to 'Add Mem', new_list_member_path(list.id), :class => 'btn btn-mini' %>

@@ -1,28 +1,38 @@
-<%= form_for @template, remote: true, :html => { :class => 'form-horizontal' } do |f| %>
+<%= form_for @template, remote: true, :html => { :class => 'form-horizontal', :multipart => true } do |f| %>
   <fieldset>
     <%= render :partial => "common/form_error", :locals => { model: @template } %>
 
     <div class="control-group">
-      <%= f.label :name, :class => 'control-label' %>
+      <%= f.label :name, "样板名称；", :class => 'control-label' %>
       <div class="controls">
         <%= f.text_field :name, :class => 'text_field' %>
       </div>
     </div>
 
     <div class="control-group">
-      <%= f.label :file_name, :class => 'control-label' %>
+      <%= f.label :file_name, "样板文件名：", :class => 'control-label' %>
       <div class="controls">
         <%= f.text_field :file_name, :class => 'text_field' %>
       </div>
     </div>
 
-    <div class="control-group">
-      <%= f.label :source, :class => 'control-label' %>
+    <div class="control-group" id="htmlsource">
+      <%= f.label :source, "网页样板：", :class => 'control-label' %>
       <div class="controls">
-        <%= f.text_area :source, :class => 'text_area span7', :rows => 5 %>
+        <%= f.text_area :source, :class => 'text_area span6', :rows => 5 %>
       </div>
     </div>
-
+    
+    <div class="control-group hidden" id="zipfile">
+    	<%= f.label :zip_url, "附件样板：", :class => 'control-label' %>
+      <div class="controls">
+        <%= f.file_field :zip_url, :class => 'text_field' %>
+      </div>
+    </div>
+    
+    <div class="control-group">
+    	<%= button_tag "附件上传", :type => 'button', :class => 'btn btn-primary btn-mini', :id => 'fjzip' %>
+    </div>
 
     <div class="form-actions">
       <%= f.submit nil, :class => 'btn btn-primary' %>

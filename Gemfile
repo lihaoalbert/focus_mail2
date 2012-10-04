@@ -7,13 +7,17 @@ gem 'will_paginate'
 gem 'bootstrap-will_paginate'
 gem 'chosen-rails'
 gem 'resque', :require => "resque/server"
+gem 'resque-scheduler', :require => 'resque_scheduler'
+#gem 'resque_mailer'
+gem 'redis'
 gem 'spreadsheet'
 gem 'carrierwave'
 gem 'remotipart', '~> 1.0'
 gem 'lazy_high_charts', '~> 1.1.5' 
 gem 'markaby'
-
+gem 'devise'
 gem 'therubyracer'
+gem 'rubyzip'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
@@ -22,6 +26,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 
 group :development, :test do
   gem 'rspec-rails'

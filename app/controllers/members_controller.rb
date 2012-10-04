@@ -32,15 +32,31 @@ class MembersController < ApplicationController
 
   def create
     @list = List.find(params[:list_id])
-    @member = @list.members.create(params[:member])
-
-    respond_to do |format|
-      if @member.save
-        format.html { redirect_to list_member_path(@list.id, @member.id), notice: 'Member was successfully created.' }
-        format.json { render json: @member, status: :created, location: @member }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @member.errors, status: :unprocessable_entity }
+    member = Member.where(["email = :e", { :e =>params[:member][:email] }])
+    if member.count <= 0 then
+      @member = @list.members.create(params[:member])
+      respond_to do |format|
+        @member.listid = @list.id
+        if @member.save
+          format.html { redirect_to list_member_path(@list.id, @member.id), notice: 'Member was successfully created.' }
+          format.json { render json: @member, status: :created, location: @member }
+        else
+          format.html { render action: "new" }
+          format.json { render json: @member.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      num = ListsMembers.where(["list_id = :l and member_id = :m", { :l => @list.id, :m => member.first.id }]).count
+      if num <= 0 then
+        ListsMembers.create({
+          :list_id => @list.id, 
+          :member_id => member.first.id,
+          :week_number => params[:member][:weeknumber]
+        })
+      end
+      respond_to do |format|
+        format.html { redirect_to list_member_path(@list.id, member.first.id), notice: 'Member was successfully created.' }
+        format.json { render json: member, status: :created, location: member }
       end
     end
   end
@@ -50,6 +66,7 @@ class MembersController < ApplicationController
     @member = @list.members.find(params[:id])
 
     respond_to do |format|
+      @member.listid = @list.id
       if @member.update_attributes(params[:member])
         format.html { redirect_to list_member_path(@list.id, @member.id), notice: 'Member was successfully updated.' }
         format.json { head :no_content }
@@ -61,9 +78,11 @@ class MembersController < ApplicationController
   end
 
   def destroy
+    @listsmembers = ListsMembers.where(["list_id = :l and member_id = :m", { :l => params[:list_id], :m => params[:id] }])
+    ListsMembers.delete(@listsmembers.first.id)
     @list = List.find(params[:list_id])
-    @member = @list.members.find(params[:id])
-    @member.destroy
+    #@member = @list.members.find(params[:id])
+    #@member.destroy
 
     respond_to do |format|
       format.html { redirect_to list_members_path(@list.id) }
@@ -109,16 +128,26 @@ class MembersController < ApplicationController
       sheet1.each 1 do |row|
         @counter+=1
         p = Member.new
-        Member.get_field_array.each_with_index do |field, i|
-          p.send("#{field[0]}=", row[i])
-        end
-
-        if p.valid?
-          p.list = @list
-          p.save!
-          @members << p
+        member = Member.where(["email = :e", { :e => row[1] }])
+        if member.count <= 0 then
+          Member.get_field_array.each_with_index do |field, i|
+            p.send("#{field[0]}=", row[i])
+          end
+          if p.valid?
+            p.listid = @list.id
+            p.save!
+            @members << p
+          else
+            @errors["#{@counter+1}"] = p.errors
+          end
         else
-          @errors["#{@counter+1}"] = p.errors
+          num = ListsMembers.where(["list_id = :l and member_id = :m", { :l => @list.id, :m => member.first.id }]).count
+          if num <= 0 then
+            ListsMembers.create({
+              :list_id => @list.id, 
+              :member_id => member.first.id
+            })
+          end
         end
       end
     else

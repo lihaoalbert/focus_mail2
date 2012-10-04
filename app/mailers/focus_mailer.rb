@@ -54,7 +54,10 @@ class FocusMailer < ActionMailer::Base
     end
     mail.attachments['vicm.png'] = {:mime_type => 'application/x-gzip',:content_id => abc,:content => File.read('/home/work/vicm.png')}
     puts mail.to_s
-    file = File.new("/home/work/#{to_name}.eml","w")
+    readfile = YAML.load_file('config/readfile.yml')
+    sendmail = readfile["sendmail"].to_s + "#{filename}.eml"
+    file = File.open(sendmail,"w")
+    #file = File.new("/home/work/#{to_name}.eml","w")
     file.print(mail.to_s)
     file.close
   end

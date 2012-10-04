@@ -8,18 +8,26 @@
       <li class="active"><a href="#tab1" data-toggle="tab">1:基本信息</a></li>
       <li><a href="#tab2" data-toggle="tab">2:收信人</a></li>
       <li><a href="#tab3" data-toggle="tab">3:模板</a></li>
+      <li><a href="#tab4" data-toggle="tab">4:发送时间</a></li>
     </ul>
     <div class="tab-content">
       <div class="tab-pane active" id="tab1">
         <div class="control-group">
-          <%= f.label :name, :class => 'control-label' %>
+          <%= f.label :subject, "信件标题：", :class => 'control-label' %>
+          <div class="controls">
+            <%= f.text_field :subject, :class => 'text_field' , :placeholder => '新建发送邮件标题'%>
+          </div>
+        </div>
+        
+        <div class="control-group" >
+          <%= f.label :name, "发件者名：", :class => 'control-label' %>
           <div class="controls">
             <%= f.text_field :name, :class => 'text_field' %>
           </div>
         </div>
 
         <div class="control-group">
-          <%= f.label :from_name, :class => 'control-label' %>
+          <%= f.label :from_name, "发件者姓：", :class => 'control-label' %>
           <div class="controls">
             <%= f.text_field :from_name, :class => 'text_field' %>
           </div>
@@ -27,23 +35,17 @@
 
 
         <div class="control-group">
-          <%= f.label :from_email, :class => 'control-label' %>
+          <%= f.label :from_email, "发件者邮箱：", :class => 'control-label' %>
           <div class="controls">
             <%= f.text_field :from_email, :class => 'text_field' %>
           </div>
         </div>
 
-        <div class="control-group">
-          <%= f.label :subject, :class => 'control-label' %>
-          <div class="controls">
-            <%= f.text_field :subject, :class => 'text_field' %>
-          </div>
-        </div>
       </div>
 
       <div class="tab-pane" id="tab2">
         <div class="control-group">
-          <%= f.label :list_id, :class => 'control-label' %>
+          <%= f.label :list_id, "邮件列表：", :class => 'control-label' %>
           <div class="controls">
             <% List.all.each do |list| %>
               <%= check_box_tag :list_ids, list.id, @campaign.lists.include?(list), :name => 'campaign[list_ids][]' -%>
@@ -101,17 +103,135 @@
 		  <% end %>
         </div>
       </div>
+      
+      <div class="tab-pane" id="tab4">
+      	<div class="control-group">
+      		<%= f.label :from_times1, "发件时间：", :class => 'control-label' %>
+      		<div class="btn-group" data-toggle="buttons-radio">
+				<button class="btn btn-mini btn-primary <%= @campaign.from_time == nil ? "active" : "" %>" type="button" id="jsfs">手动发送</button>
+				<button class="btn btn-mini btn-primary <%= @campaign.from_time == nil ? "" : "active" %>" type="button" id="yyfs">预约发送</button>
+			</div>
+			<div class="hidden" id="dtyyfs">
+				<%= label_tag "datetime_yyfs", "预约时间：", :class => 'control-label' %>
+				<input type="text" id="datepicker" name="datepicker">
+				<select id="selecthour" name="selecthour" data-placeholder="Hour" style="width:70px;" class="chzn-select-deselect" tabindex="7">
+					<option value=""></option>
+					<% for i in 1..24 do %>
+					<option value=<%= i.to_s.length < 2 ? "0" + i.to_s : i.to_s %>><%= i.to_s.length < 2 ? "0" + i.to_s : i.to_s %></option>
+					<% end %>
+				</select>
+				<select id="selectminute" name="selectminute" data-placeholder="Minute" style="width:70px;" class="chzn-select-deselect" tabindex="7">
+					<option value=""></option>
+					<% for i in 0..59 do %>
+					<option value=<%= i.to_s.length < 2 ? "0" + i.to_s : i.to_s %>><%= i.to_s.length < 2 ? "0" + i.to_s : i.to_s %></option>
+					<% end %>
+				</select>
+				<select id="selectsecond" name="selectsecond" data-placeholder="Second" style="width:70px;" class="chzn-select-deselect" tabindex="7">
+					<option value=""></option>
+					<% for i in 0..59 do %>
+					<option value=<%= i.to_s.length < 2 ? "0" + i.to_s : i.to_s %>><%= i.to_s.length < 2 ? "0" + i.to_s : i.to_s %></option>
+					<% end %>
+				</select>
+			</div>
+			<%= f.hidden_field :from_time %>
+      	</div>
+      </div>
     </div>
   </div>
 
   <div class="form-actions">
     <%= f.submit nil, :class => 'btn btn-primary' %>
-    <a onclick="$('#<%= dom_id @campaign, action_name %>').parent().html('');return false;", class='btn'>Cancel</a>
+    <a onclick="$('#form > form > div').parent().html('');return false;", class='btn'>取消</a>
   </div>
 <% end %>
 
 <script>
   window.onload = function(){
+  	$(function() {
+  		$("#campaign_from_time").val('');
+  		$("#jsfs").click(function(){
+	    	$("#dtyyfs").addClass('hidden')
+	    	$("#campaign_from_time").val('');
+	    });
+    
+  		var d = new Date();
+		var vYear = d.getFullYear();
+		if(vYear < 10)
+		{
+			vYear = "0" + vYear;
+		}
+		var vMon = d.getMonth() + 1
+		if(vMon < 10)
+		{
+			vMon = "0" + vMon;
+		}
+		var vDay = d.getDate();
+		if(vDay < 10)
+		{
+			vDay = "0" + vDay;
+		}
+		var h = d.getHours();
+		if(h < 10)
+		{
+			h = "0" + h;
+		}
+		var m = d.getMinutes();
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		var se = d.getSeconds(); 
+		if(se < 10)
+		{
+			se = "0" + se;
+		}
+		
+		$("#yyfs").click(function(){
+	    	$("#dtyyfs").removeClass('hidden');
+	    	$("#campaign_from_time").val(vYear+ "-" + vMon + "-" + vDay + " " + h + ":" + m + ":" + se);
+	    });
+		
+
+		$("#datepicker").datepicker({
+			changeMonth: true,
+			changeYear: true
+		});
+		
+		$("#datepicker").datepicker( "option", "dateFormat", "yy-mm-dd" );
+		$(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+		
+		$("#datepicker").val(vYear+ "-" + vMon + "-" + vDay);
+		chose_set_ini("#selecthour", h);
+		chose_set_ini("#selectminute", m);
+		chose_set_ini("#selectsecond", se);
+		
+		//单选select 数据初始化
+	  	function chose_set_ini(select, value){
+	  	  	$(select).attr('value',value);
+	  		$(select).trigger("liszt:updated");
+	  	}
+	  	
+	  	$("#datepicker").change(function(){
+	  		$("#campaign_from_time").val($(this).val() + " " + chose_get_value("#selecthour") + ":" + chose_get_value("#selectminute") + ":" + chose_get_value("#selectsecond"));
+	  	});
+	  	
+	  	$("#selecthour").change(function(){
+	  		$("#campaign_from_time").val($("#datepicker").val() + " " + $(this).val() + ":" + chose_get_value("#selectminute") + ":" + chose_get_value("#selectsecond"));
+	  	});
+	  	
+	  	$("#selectminute").change(function(){
+	  		$("#campaign_from_time").val($("#datepicker").val() + " " + chose_get_value("#selecthour") + ":" + $(this).val() + ":" + chose_get_value("#selectsecond"));
+	  	});
+	  	
+	  	$("#selectsecond").change(function(){
+	  		$("#campaign_from_time").val($("#datepicker").val() + " " + chose_get_value("#selecthour") + ":" + chose_get_value("#selectminute") + ":" + $(this).val());
+	  	});
+	  	
+	  	function chose_get_value(select){
+	  	  	return $(select).val();
+	  	}
+	});
+	
     var display_campaign_entries;
 
     $(function() {

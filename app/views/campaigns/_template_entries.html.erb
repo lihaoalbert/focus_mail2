@@ -9,25 +9,25 @@
     </div>
   <% end %>
   <div class="tabbable">
-			  <ul class="nav nav-tabs">
-			    <li class="active"><a href="#tab<%= template.id %>1" data-toggle="tab">code</a></li>
-			    <li><a href="#tab<%= template.id %>2" data-toggle="tab">html</a></li>
-			  </ul>
-			  <div class="tab-content">
-			    <div class="tab-pane active" id="tab<%= template.id %>1">
-			      <div class="control-group">
-			        <div class="controls">
-			          <pre><%= display_email(template.id,template.img_url) %></pre>
-			        </div>
-			      </div>
-			    </div>
-			    <div class="tab-pane" id="tab<%= template.id %>2">
-			      <div class="control-group">
-			        <div class="controls">
-			          <pre><%= display_email(template.id,template.img_url).html_safe %></pre>
-			        </div>
-			      </div>
-			    </div>
-			  </div>
-			</div>
+	<ul class="nav nav-tabs">
+	  <li class="active"><a href="#tab<%= template.id %>1" data-toggle="tab">code</a></li>
+	  <li><a href="#tab<%= template.id %>2" data-toggle="tab">html</a></li>
+	</ul>
+	<div class="tab-content">
+	  <div class="tab-pane active" id="tab<%= template.id %>1">
+	    <div class="control-group">
+	      <div class="controls">
+	        <pre><%= display_email(template.id,template.img_url) %></pre>
+	      </div>
+	    </div>
+	  </div>
+	  <div class="tab-pane" id="tab<%= template.id %>2">
+	    <div class="control-group">
+	      <div class="controls">
+	        <pre><%= display_email(template.id,template.img_url).html_safe %></pre>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
 <% end %>

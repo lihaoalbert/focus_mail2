@@ -6,6 +6,7 @@ class CreateCampaigns < ActiveRecord::Migration
       t.string :from_email
       t.string :subject
       t.integer :template_id
+      t.datetime :from_time
 
       t.timestamps
     end

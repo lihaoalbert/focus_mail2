@@ -1,0 +1,23 @@
+<%=form_tag "/useradmins/saveupdate", :class => 'form-horizontal', :remote => true do %>
+<%= render :partial => "common/form_error", :locals => { model: @user } %>
+  <div class="control-group">
+    <%= label_tag 'uemail', '用户名称', :class => 'control-label' %>
+    <div class="controls">
+      <%= label_tag 'uemail', @user.email, :class => 'control-label' %>
+    </div>
+  </div>
+  <%= hidden_field_tag "userid", @user.id, :class => 'text_field' %>
+  <% @useradmin.each do |useradmin| %>
+  <div class="control-group">
+    <%= label_tag useradmin.asset_type.downcase, useradmin.asset_type, :class => 'control-label' %>
+    <div class="controls">
+    	<%= button_tag  useradmin.type_user == 1 ? '启用':'停止', :type => 'button', :class => 'btn btn-primary btn-mini', :id => "btn#{useradmin.asset_type.downcase}#{dom_id @user}", :onclick => "buntf('#btn#{useradmin.asset_type.downcase}#{dom_id @user}', '##{useradmin.asset_type.downcase}#{dom_id @user}')" %>
+    	<%= hidden_field_tag useradmin.asset_type.downcase, useradmin.type_user, :class => 'text_field', :id => "#{useradmin.asset_type.downcase}#{dom_id @user}" %>
+    </div>
+  </div>
+  <% end %>
+  <div class="form-actions">
+    <%= submit_tag "保存", :class => 'btn btn-primary' %>
+    <a onclick="$('#<%= dom_id @user, action_name %>').parent().html('');$('#uadmin<%= @user.id %>').addClass('hidden');return false;", class='btn'>Cancel</a>
+  </div>
+<% end %>

@@ -1,8 +1,14 @@
-<tr id="<%= dom_id entry %>" >
+<tr id="<%= dom_id entry %>">
   <td><%= entry.name %></td>
   <td><%= entry.default_value %></td>
   <td>
     <%= link_to 'Edit', edit_template_entry_url(entry.template, entry), :class => 'btn btn-mini', remote: true %>
     <%= link_to 'Destroy', [entry.template, entry], :method => :delete, :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger', remote: true %>
   </td>
+</tr>
+<tr class = "template_edit<%= dom_id entry %> hidden">
+	<td colspan="3">
+		<div class="template_form<%= dom_id entry %>">
+  		</div>
+	</td>
 </tr>

@@ -1,2 +1,4 @@
+$('#<%= dom_id @entry.template %> .template_edit<%= dom_id @entry %>').html('');
 $("#<%= dom_id @entry %>").replaceWith("<%= j render @entry %>");
-$("#<%= dom_id @entry.template %> .template_form").html("");
+$('#<%= dom_id @entry.template %> .template_edit<%= dom_id @entry %>').addClass('hidden');
+$('#<%= dom_id @entry %>').removeClass('hidden');

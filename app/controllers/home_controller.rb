@@ -2,6 +2,23 @@ class HomeController < ApplicationController
   include ApplicationHelper
 
   def index
+    filter_time = params[:f]
+    @where = ''
+    @where1 = ''
+    if filter_time != '' and filter_time != nil then
+      case filter_time.size
+        when 4 then
+          @where = 'year(campaigns.created_at) = ' + filter_time.to_s
+        when 6 then 
+          @where = 'year(campaigns.created_at) = ' + filter_time.to_s[0..3]
+          @where1 = 'month(campaigns.created_at) = ' + filter_time.to_s[4..5].to_i.to_s
+      end
+    end
+
+     
+    @cam_list = Campaign.find(:all,
+      :conditions => ["#{@where}"],
+      :conditions => ["#{@where1}"])
   end
 
   def generate_email
@@ -54,4 +71,50 @@ class HomeController < ApplicationController
     end
   end
 
+  def campaign
+    
+    @campaigns = Array.new
+    @i = Array.new
+    @i = [1,2,3,4,5,6]
+    @i.each do |i|
+      @pie = LazyHighCharts::HighChart.new('graph') do |f|
+        f.chart({:plotBackgroundColor=>'null' , 
+          :height => 100,
+          :width => 100,
+          :plotShadow => false})
+        f.title({:text=> ''})
+        f.plotOptions({:pie=>{
+            :allowPointSelect=> true , 
+            :cursor=> 'pointer' , 
+            :dataLabels=>{
+              :enabled=> false , 
+              :color=> '#000000' , 
+              :connectorColor=> '#000000'}}})
+        f.series({:type=>'pie' , :name=> 'Browser share' , 
+            :data=> [
+          ['back hard',   10.0],
+          ['back soft',   13.8],
+          ['Reached', 50.8],
+          ['Account',    17.5]
+        ]})
+        f.tooltip({:enabled => false })
+      end
+        
+      @send_totle = 50000
+      @send_reach = 45000
+      @back_hard = 2100
+      @back_soft = 1300
+      @account_erro = 1100
+      @back_other = 500
+      @campaign = Array.new
+      @campaign.push(i,@pie,@send_totle,@send_reach,@back_hard,@back_soft,@account_erro,@back_soft,)
+      
+      @campaigns.push(@campaign)
+    end
+   
+    respond_to do |format|
+      format.html { render :layout => false } #:layout => false 设置不使用页面框架
+      #format.json  { render :json => @home }
+    end
+  end
 end

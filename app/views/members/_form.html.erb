@@ -19,5 +19,6 @@
 
   <div class="form-actions">
     <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= link_to 'Back', list_members_path(@list.id),:class => 'btn' %>
   </div>
 <% end %>

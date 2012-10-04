@@ -1,0 +1,6 @@
+$("#form").html("<%= j render :partial => 'form' %>");
+$("#form > form").replaceWith("<%= j render "form" %>");
+$(".chzn-select-deselect").chosen({allow_single_deselect:true});
+$("#template<%= dom_id @useradmin %>").val(0);
+$("#campaign<%= dom_id @useradmin %>").val(0);
+$("#report<%= dom_id @useradmin %>").val(0);

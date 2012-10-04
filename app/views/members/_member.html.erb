@@ -1,10 +1,10 @@
 <tr id="<%= dom_id member %>">
-  <td><%= link_to member.id, list_member_path(member.list.id, member.id) %></td>
+  <td><%= link_to member.id, list_member_path(@list.id, member.id) %></td>
   <td><%= member.name %></td>
   <td><%= member.email %></td>
-  <td><%=l member.created_at %></td>
+  <td><%= member.created_at.strftime("%F %T") %></td>
   <td>
-    <%= link_to 'Edit', edit_list_member_url(member.list, member), :class => 'btn btn-mini' %>
-    <%= link_to 'Destroy', [member.list, member], :method => :delete, :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger' %>
+    <%= link_to 'Edit', edit_list_member_url(@list.id, member), :class => 'btn btn-mini' %>
+    <%= link_to 'Destroy', [@list, member], :method => :delete, :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger' %>
   </td>
 </tr>
