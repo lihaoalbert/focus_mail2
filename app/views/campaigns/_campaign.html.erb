@@ -23,12 +23,13 @@
 				  			  </div>
 							</div>
 							<div class="tweet-row" >
-				  			  <%= link_to '发送', deliver_campaign_path(campaign.id), :class => "btn btn-mini btn-primary #{campaign.from_time == nil ? '' : 'hidden' }", :remote => true %>
-						      <%= link_to '修改', edit_campaign_path(campaign), :class => 'btn btn-mini', :remote => true %>
+				  		<%= link_to '发送', deliver_campaign_path(campaign.id), :class => "btn btn-mini btn-primary #{campaign.from_time == nil ? '' : 'hidden' }", :remote => true %>
+						  <%= link_to '点击分析', {:controller => "clickinfo", :action => "clickinfo", :campaign_id => campaign.id}, :class => "btn btn-mini #{campaign.from_time == nil ? 'hidden' : '' }" %>
+						   <%= link_to '修改', edit_campaign_path(campaign), :class => 'btn btn-mini', :remote => true %>
 							  <%= link_to '删除', campaign_path(campaign), :method => :delete,
 						        :confirm => '不可恢复，确定要删除吗?', :class => 'btn btn-mini btn-danger', :remote => true %>
 							  <%= link_to '发送测试', "#myModal_#{campaign.id}", :class => 'btn btn-mini btn-primary', :"data-toggle" => "modal", :remote => true %>
-							</div>
+					  	</div>
 							<div id="myModal_<%= campaign.id %>" class="modal fade">
 							  <div class="modal-header">
 							  	<button type="button" class="close" data-dismiss="modal">×</button>

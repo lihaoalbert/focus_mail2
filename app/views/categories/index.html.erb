@@ -1,0 +1,125 @@
+<div class="container-fluid">
+  <div class="page-header">
+    <table style="width:100%">
+      <tr>
+        <td><h2>名单管理</h2></td>
+        <td style="float:right">
+	  <div style="float:right">
+            <%= link_to '新建名单列表', "#new_member", :"data-toggle" => "modal", :class => 'btn btn-primary', remote: true %>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br />
+  <div id="new_member" class="modal fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3><h2>名单新增</h2></h3>
+    </div>
+    <div class="modal-body">
+      <%= form_tag '/categories/create', :class => 'form-horizontal' , remote: true, :id => 'categories_form' do %>
+        <%= render "form" %>
+      <% end %>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">关闭</a>
+    </div>
+  </div>
+  <div id="form"></div>
+  <div class="row-fluid">
+    <div class="span8">
+      <!--Sidebar content-->
+      <% if @lists.count > 0 %>
+      <iframe id="list_member" src="/lists/<%= session[:list_id] == nil ? @lists[0].id : session[:list_id] %>/members" width="100%" height="100%" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"></iframe>
+      <% end %>
+    </div>
+    <div class="span4">
+      <!--Body content-->
+      <% @lists.each do |list| %>
+      <% mos,lma,name_num = memberorg(list.id) %>
+      <div style="background: #E4E4E4" onclick="displayid(<%= list.id %>)">
+      	<table>
+          <tr>
+      	    <td>
+      	      <%= list.name %>&nbsp;&nbsp;&nbsp;&nbsp;
+      	    </td>
+      	    <td>
+      	      <%= list.created_at.strftime("%F %T") %>&nbsp;&nbsp;
+      	    </td>
+      	    <td>
+      	      <%= list.updated_at.strftime("%F %T") %>
+      	    </td>
+      	  </tr>
+          <tr>
+      	    <td colspan="3" align="right">
+      	      <%= link_to 'Edit', "#edit_member#{list.id}", :"data-toggle" => "modal", :class => 'btn btn-mini', :remote => true %>&nbsp;&nbsp;
+      	      <%= link_to 'Del', category_path(list), :method => :delete, :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger', :remote => true %>&nbsp;&nbsp;
+      	    </td>
+      	  </tr>
+      	  <tr>
+      	    <td colspan="2">
+      	      <% @c_summery = get_category_summery(list,name_num,lma)%>
+      	      <% if @c_summery[:data_count] > 0 then %>
+      	        <%= high_chart("chart" + @c_summery[:id].to_s , @c_summery[:pie]) %>
+      	      <% end %>
+      	    </td>
+      	    <td>
+      	      <ul>
+      	        <li>总数：<%= list.members.count %></li>
+                <% @testnum = 0 %>
+    		<% name_num.each_with_index do |item,index| %>
+    		<% if index < 6 %>
+    		<li><%= item.org_name %>:<%= item.org_number %></li>
+    		<% else %>
+    		  <% @testnum += item.org_number %>
+    		<% end %>
+    		<% end %>
+    		<li>其他：<%= @testnum%></li>
+      	      </ul>
+      	    </td>
+      	  </tr>
+        </table>
+        <div id="edit_member<%= list.id %>" class="modal fade">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal">×</button>
+	    <h3><h2>名单修改</h2></h3>
+	  </div>
+	  <div class="modal-body">
+	    <%= form_tag "/categories/update/#{list.id}", :class => 'form-horizontal' , remote: true, :id => 'categories_form' do %>
+	    <%= hidden_field_tag :id => 'org_id' %>
+	    <div class="control-group">
+	      <%= label_tag 'name', '姓名：', :class => 'control-label' %>
+	      <div class="controls">
+	        <%= text_field_tag 'name', list.name, :class => 'text_field' %>
+	      </div>
+	    </div>					
+	    <div class="form-actions">
+	      <%= submit_tag '修改', :class => 'btn btn-primary'%>
+	      <a href="#" class="btn" data-dismiss="modal">关闭</a>
+	    </div>
+	    <% end %>
+	  </div>
+	  <div class="modal-footer">
+	    <a href="#" class="btn" data-dismiss="modal">关闭</a>
+	  </div>
+	</div>
+      </div>
+      <hr />
+      <% end %>
+      <%= will_paginate @lists %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	$("#list_member").load(function(){
+		var mainheight = $(this).contents().find("body").height()+100;
+		$(this).height(mainheight);
+	}); 
+	function displayid(listid)
+	{
+		$('#list_member').attr("src","/lists/" + listid + "/members");
+	}
+</script>
+

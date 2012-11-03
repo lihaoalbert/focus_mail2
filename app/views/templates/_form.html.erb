@@ -1,42 +1,31 @@
 <%= form_for @template, remote: true, :html => { :class => 'form-horizontal', :multipart => true } do |f| %>
   <fieldset>
     <%= render :partial => "common/form_error", :locals => { model: @template } %>
+    <%= f.hidden_field :org_id %>
 
-    <div class="control-group">
-      <%= f.label :name, "样板名称；", :class => 'control-label' %>
-      <div class="controls">
-        <%= f.text_field :name, :class => 'text_field' %>
-      </div>
-    </div>
-
-    <div class="control-group">
-      <%= f.label :file_name, "样板文件名：", :class => 'control-label' %>
-      <div class="controls">
-        <%= f.text_field :file_name, :class => 'text_field' %>
-      </div>
-    </div>
-
-    <div class="control-group" id="htmlsource">
-      <%= f.label :source, "网页样板：", :class => 'control-label' %>
-      <div class="controls">
-        <%= f.text_area :source, :class => 'text_area span6', :rows => 5 %>
-      </div>
-    </div>
     
-    <div class="control-group hidden" id="zipfile">
-    	<%= f.label :zip_url, "附件样板：", :class => 'control-label' %>
-      <div class="controls">
+      <%= f.label :name, "模板名称：" %>
+      
+        <%= f.text_field :name, :class => 'span4', :placeholder => '模板名称' %>
+      <%= f.label :file_name, "文件名称：" %>
+        <%= f.text_field :file_name, :class => 'span4', :placeholder => '文件名称' %>
+    <div class="control-group" id="htmlsource">     
+      <%= f.label :source, "网页源码：" %>
+        <%= f.text_area :source, :class => 'text_area span4', :rows => 10 %>
+    </div>
+    <div class=" hidden" id="zipfile">
+    	<%= f.label :zip_url, "附件样板："%>
         <%= f.file_field :zip_url, :class => 'text_field' %>
-      </div>
     </div>
     
     <div class="control-group">
-    	<%= button_tag "附件上传", :type => 'button', :class => 'btn btn-primary btn-mini', :id => 'fjzip' %>
+    	<%= button_tag "zip上传", :type => 'button', :class => 'btn btn-primary btn-mini', :id => 'fjzip' %>
+    	<a href="#"><span class="help-block">点击这里下载zip档范例，以及规范说明</span></a>
+    	
     </div>
 
-    <div class="form-actions">
-      <%= f.submit nil, :class => 'btn btn-primary' %>
-      <a onclick="$('#<%= dom_id @template, action_name %>').parent().html('');return false;", class='btn'>Cancel</a>
-    </div>
+      <%= f.submit "保存", :class => 'btn btn-primary' %>
+      <a onclick="$('#<%= dom_id @template, action_name %>').parent().html('');return false;", class='btn'>取消</a>
+
   </fieldset>
 <% end %>

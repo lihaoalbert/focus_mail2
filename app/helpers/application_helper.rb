@@ -1,3 +1,4 @@
+#encoding:utf-8
 module ApplicationHelper
   def full_title(page_title)
     base_title = "Focus Mail"
@@ -66,60 +67,59 @@ module ApplicationHelper
   end
 
   def get_campaign_summery(campaign_id)
-	@cam_summery = SendState.find(:last,
-                     :select => "be_hits_number, be_hits_ratio, effective_operand_address, has_sent_number, open_number, open_ratio, reach_number, reach_ratio, send_ratio, total_address_number, campaign_id",
-                     :conditions => ["send_states.campaign_id = ?", campaign_id])
-    @campaign = Campaign.find(campaign_id);
-  if @cam_summery != nil then
-    @pie = LazyHighCharts::HighChart.new('graph') do |f|
-      f.chart({:plotBackgroundColor=>'null' , 
-        :height => 100,
-        :width => 100,
-        :plotShadow => false})
-      f.title({:text=> ''})
-      f.plotOptions({:pie=>{
-          :allowPointSelect=> true , 
-          :cursor=> 'pointer' , 
-          :dataLabels=>{
-            :enabled=> false , 
-            :color=> '#000000' , 
-            :connectorColor=> '#000000'}}})
-      f.series({:type=>'pie' , :name=> 'Browser share' , 
-          :data=> [
-        ['back hard', @cam_summery.effective_operand_address.to_i],
-        ['back soft', @cam_summery.reach_number.to_i],
-        ['Reached', @cam_summery.open_number.to_i],
-        ['Account', @cam_summery.be_hits_number.to_i]
-      ]})
-      f.tooltip({:enabled => false })
-    end
-      
-    @send_totle = @cam_summery.total_address_number#50000
-    @send_reach = @cam_summery.reach_number#45000
-    @back_hard = @cam_summery.reach_ratio#2100
-    @back_soft = @cam_summery.open_ratio#1300
-    @account_erro = @cam_summery.be_hits_ratio#1100
-    @back_other = @cam_summery.effective_operand_address#500
-   else
-    @send_totle = 0
-    @send_reach = 0
-    @back_hard = 0
-    @back_soft = 0
-    @account_erro = 0
-    @back_other = 0
-    @pie = ''
-   end
-      
-    @return = {:name => @campaign.subject,
-      :id => @campaign.id,
-      :send_totle => @send_totle,
-      :pie => @pie,
-      :send_reach => @send_reach,
-      :back_hard => @back_hard,
-      :back_soft => @back_soft,
-      :account_erro => @account_erro
-      }
-    
+    cam_summery = SendState.find(:last,
+                       :select => "be_hits_number, be_hits_ratio, effective_operand_address, has_sent_number, open_number, open_ratio, reach_number, reach_ratio, send_ratio, total_address_number, campaign_id",
+                       :conditions => ["send_states.campaign_id = ?", campaign_id])
+     campaign = Campaign.find(campaign_id);
+    if cam_summery != nil then
+      pie = LazyHighCharts::HighChart.new('graph') do |f|
+        f.chart({:plotBackgroundColor=> '#FFFFFF' , 
+          :height => 100,
+          :width => 100,
+          :plotShadow => false})
+        f.title({:text=> ''})
+        f.plotOptions({:pie=>{
+            :allowPointSelect=> true , 
+            :cursor=> 'pointer' , 
+            :dataLabels=>{
+              :enabled=> false , 
+              :color=> '#000000' , 
+              :connectorColor=> '#000000'}}})
+        f.series({:type=>'pie' , :name=> 'Browser share' , 
+            :data=> [
+          ['back hard', cam_summery.effective_operand_address.to_i],
+          ['back soft', cam_summery.reach_number.to_i],
+          ['Reached', cam_summery.open_number.to_i],
+          ['Account', cam_summery.be_hits_number.to_i]
+        ]})
+        f.tooltip({:enabled => false })
+      end
+        
+      send_totle = cam_summery.total_address_number#50000
+      send_reach = cam_summery.reach_number#45000
+      back_hard = cam_summery.reach_ratio#2100
+      back_soft = cam_summery.open_ratio#1300
+      account_erro = cam_summery.be_hits_ratio#1100
+      back_other = cam_summery.effective_operand_address#500
+     else
+      send_totle = 0
+      send_reach = 0
+      back_hard = 0
+      back_soft = 0
+      account_erro = 0
+      back_other = 0
+      pie = ''
+     end
+        
+      @return = {:name => campaign.subject,
+        :id => campaign.id,
+        :send_totle => send_totle,
+        :pie => pie,
+        :send_reach => send_reach,
+        :back_hard => back_hard,
+        :back_soft => back_soft,
+        :account_erro => account_erro
+        } 
   end
   
   def get_campaign_report_by_id(id)
@@ -152,5 +152,42 @@ attr_accessible
     @report_array.push(@campaign_name,@total_members,@total_tracks,@total_clickers,@total_clicks)
     
     return @report_array
+  end
+  
+  def get_category_summery(list,mos,lma)
+    datas = []
+    testnum = 0
+    mos.each_with_index do |item,index|
+      if index < 6 then
+        datas.push([item.org_name,item.org_number])
+      else
+        testnum += item.org_number
+      end
+    end
+    datas.push(["其他",testnum])
+    @pie = LazyHighCharts::HighChart.new('graph') do |f|
+      f.chart({:plotBackgroundColor=> '#E4E4E4' ,
+        :backgroundColor=> '#E4E4E4' ,
+        :height => 150,
+        :width => 150,
+        :plotShadow => false})
+      f.title({:text=> ''})
+      f.plotOptions({:pie=>{
+          :allowPointSelect=> true , 
+          :cursor=> 'pointer' , 
+          :dataLabels=>{
+            :enabled=> false , 
+            :color=> '#000000' , 
+            :connectorColor=> '#000000'}}})
+      f.series({:type=>'pie' , :name=> 'Browser share' , 
+          :data=> datas})
+      f.tooltip({:enabled => false })
+    end
+      
+    @return = {:name => list.name,
+      :id => list.id,
+      :pie => @pie,
+      :data_count => datas.count
+      }
   end
 end

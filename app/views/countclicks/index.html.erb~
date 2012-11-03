@@ -1,0 +1,181 @@
+<%= javascript_include_tag "application" %>
+<%= csrf_meta_tags %>
+<%= stylesheet_link_tag "application", :media => "all" %>
+
+
+ <div class="container">
+    <!--列表所有活动邮件模板-->
+    <div class="row">
+      <div class="span11 offset1">
+        <table class="table">
+          <caption>点击次数跟踪</caption>
+          <thead><tr>
+            <th>id</th>
+            <th>name</th>
+            <th>from name</th>
+            <th>to name</th>
+          </tr></thead>
+          <tbody>
+            <% @campaigns.each do |campaign| %>
+            <tr onclick="set_color(this)">
+              <td><a onclick="update_clicknum(<%= campaign.id %>)"><%= campaign.id %></a></td>
+              <td><%= campaign.name %></td>
+              <td><%= campaign.from_name %></td>
+              <td><%= campaign.from_email %></td>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div><br>
+   <!--设置面板-->
+  <div class="row">
+    <div class="span11 offset1" id="focus-show-setting-pane">
+     <form class="well">
+     <legend>设置面板</legend>
+      <div>
+       <label class="inline">显示链接点击次数</label>
+       <label class="radio inline">
+       <input type="radio" id="optionsRadios1" name="optionsRadios" value="mailclick1">
+       所有
+       </label>
+       <label class="radio inline">
+       <input type="radio" id="optionsRadios2" name="optionsRadios" value="mailclick2">
+       前5名
+       </label>
+       <label class="radio inline">
+       <input type="radio" id="optionsRadios3" name="optionsRadios" value="mailclick3">
+       前10名
+       </label>
+       <label class="radio inline">
+       <input type="radio" id="optionsRadios4" name="optionsRadios" value="mailclick4">
+       点击次数>0
+       </label>
+       <label class="radio inline">
+       <input type="radio" id="optionsRadios5" name="optionsRadios" value="mailclick5">
+       自定义：
+       </label>
+       <span class="input-prepend">
+        <span class="add-on">前</span>
+        <input class="span2" id="msself" height=20 type="text" placeholder="名次" disabled="disabled">
+       </span>
+      <label class="radio inline">
+      <a class="btn" onclick='update_clicknum($("#input_campaign_id").attr("value"))'>应用</a>
+      </label>
+      </div>
+      
+       <a class="btn" name="tooltip-setting" onclick="show_tooltips(this)">隐藏clicks提示</a>
+    </form>
+    </div>
+  </div>
+    <!--活动邮件模板链接点击次数-->
+  <div class="row">
+      <div class="span9 offset1">
+      <div id="focus_mail_count_click_pane"></div>
+        <div style="text-align:center">加载中...</div>
+      </div>
+      <div class="span2">
+       <a class="btn" onclick='update_clicknum($("#input_campaign_id").attr("value"))'>刷新</a><br>
+       <a class="btn" onclick="show_setting(this)">设置</a><br>
+      </div>
+  </div>
+</div>
+<input type="hidden" id="input_campaign_id">
+  
+<script type="text/javascript">
+$(function(){
+  $("tbody tr:first").trigger("click");
+  $("tbody tr:first td:first a").trigger("click");
+  $("#input_campaign_id").attr("value",$("tbody tr:first td:first a").html()); 
+  
+  $("input[type=radio][name=optionsRadios][value='mailclick1']").attr("checked","checked");
+  $("#focus-show-setting-pane").css("display","none");
+  
+  //点击自定义显示排名时输入框可用
+  if($("input[value=mailclick5]").attr("checked"))
+    $("#msself").attr("disabled",false);
+  else
+    $("#msself").attr("disabled",true);
+    
+  $("input[type=radio][name=optionsRadios]").click(function(){
+    if($(this).attr("value")=="mailclick5"){
+      $("#msself").attr("disabled",false);
+    }else{
+      $("#msself").attr("disabled",true);
+    }
+  });
+});
+
+ function show_setting(cname){
+   $("a[name=tooltip-setting]").trigger("click");
+  //$("[rel=tooltip]").tooltip('hide'); 
+   if($(cname).text()=="设置"){
+     $(cname).html("隐藏");
+     $("#focus-show-setting-pane").css("display","block");
+   }else{
+     $(cname).html("设置");
+     $("#focus-show-setting-pane").css("display","none");
+   }
+ }
+ 
+ function show_tooltips(cname){
+   if($(cname).text()=="隐藏clicks提示"){
+     $(cname).html("显示clicks提示");
+     $("[rel=tooltip]").tooltip('hide');
+     //$("[rel=tooltip]").hover(function(){$("[rel=tooltip]").tooltip('show');},
+     //            function(){$("[rel=tooltip]").tooltip('show');});
+    }else{
+     $(cname).html("隐藏clicks提示");
+     $("[rel=tooltip]").tooltip('show');
+     //$("a").unbind('mouseenter mouseleave');
+    }
+ }
+ 
+ function set_color(cname){
+  $("tr").css("background-color","white");
+  $(cname).css("background-color","gray");
+ }
+ function update_clicknum(campaign_id){
+   var strhost = window.location.host;
+	  var strprotocol = window.location.protocol;
+	  var strurl = strprotocol + "//" + strhost + "/countclicks/refresh";
+	  var moptional = $("input[type=radio][name=optionsRadios][checked]").val();
+	  $("input[type=radio][name=optionsRadios]").each(function(){
+	    if($(this).attr("checked")=="checked")
+	      moptional = $(this).val();
+	  });
+	  var mstype;
+	  switch(moptional){
+	  case "mailclick1":
+	    mstype="all";break;
+	  case "mailclick2":
+	    mstype="5";break;
+	  case "mailclick3":
+	    mstype="10";break;
+	  case "mailclick4":
+	    mstype="gt0";break;
+	  case "mailclick5":
+	    mstype=String($("#msself").attr("value"));break;
+	  default:
+	    mstype="error";alert("error");break;
+   }
+	  $.ajax({
+		  type: 'POST',
+		  url: strurl,
+		  contentType: 'multipart/form-data',
+		  datatype: 'json',
+		  data:{"campaign_id":campaign_id,"mstype":mstype},
+		  success:function(data)
+		  {
+		    $("[rel=tooltip]").tooltip('hide'); 
+      $("#focus_mail_count_click_pane").html(data);
+      $("#input_campaign_id").attr("value",campaign_id);
+		  },
+		  error:function(xhr,r,e)
+		  {
+			  alert(e);
+		  }
+	  });
+ }
+
+</script>

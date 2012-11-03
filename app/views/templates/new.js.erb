@@ -1,7 +1,7 @@
 $("#templates_form").html("<%= j render :partial => 'form' %>");
 $("#templates_form > form").addClass("box");
 $("#fjzip").click(function(){
-	if($(this).text() == "附件上传")
+	if($(this).text() == "zip上传")
 	{
 		$("#htmlsource").addClass("hidden");
 		$("#zipfile").removeClass("hidden");
@@ -11,6 +11,6 @@ $("#fjzip").click(function(){
 	{
 		$("#htmlsource").removeClass("hidden");
 		$("#zipfile").addClass("hidden");
-		$(this).text("附件上传");
+		$(this).text("zip上传");
 	}
 });

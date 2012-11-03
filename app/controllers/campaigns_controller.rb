@@ -5,8 +5,31 @@ class CampaignsController < ApplicationController
   # GET /campaigns
   # GET /campaigns.json
   def index
-    @campaigns = Campaign.all
-    @campaign = Campaign.new
+    #@campaigns = Campaign.all
+    #@campaign = Campaign.new
+    user_id = current_user.id
+    userids = [6,7,8,9,10,12,13]
+    if userids.index(user_id.to_i) != nil then
+      @campaigns = Campaign.all
+      @campaign = Campaign.new
+      @lists = List.all
+      @templates = Template.all
+    else
+      controller = "Campaign"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @campaigns = Campaign.find(orglist)
+      @campaign = Campaign.new
+      @campaign.org_id = FocusMail::ListUserorg::userorg_id(user_id)
+      controller = "Template"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @templates = Template.find(orglist)
+    
+      controller = "List"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @lists = List.find(orglist)
+    end
+
+    user_action_log(0,params[:controller],"index")
 
     respond_to do |format|
       format.html # index.html.erb
@@ -18,6 +41,7 @@ class CampaignsController < ApplicationController
   # GET /campaigns/1.json
   def show
     @campaign = Campaign.find(params[:id])
+    user_action_log(params[:id],params[:controller],"show")
 
     respond_to do |format|
       format.html # show.html.erb
@@ -26,7 +50,24 @@ class CampaignsController < ApplicationController
   end
 
   def new
+    user_id = current_user.id
     @campaign = Campaign.new
+    @campaign.org_id = FocusMail::ListUserorg::userorg_id(user_id)
+    userids = [6,7,8,9,10,12,13]
+    if userids.index(user_id.to_i) != nil then
+      @lists = List.all
+      @templates = Template.all
+    else
+      controller = "Template"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @templates = Template.find(orglist)
+    
+      controller = "List"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @lists = List.find(orglist)
+    end
+    @campaign.org_id = FocusMail::ListUserorg::userorg_id(user_id)
+    user_action_log(0,params[:controller],"new")
 
     respond_to do |format|
       format.html # new.html.erb
@@ -35,7 +76,25 @@ class CampaignsController < ApplicationController
   end
 
   def edit
-    @campaign = Campaign.find(params[:id])
+    user_id = current_user.id
+    userids = [6,7,8,9,10,12,13]
+    if userids.index(user_id.to_i) != nil then
+      @campaign = Campaign.find(params[:id])
+      @lists = List.all
+      @templates = Template.all
+    else
+      @campaign = Campaign.find(params[:id])
+      @campaign = Campaign.new
+      @campaign.org_id = FocusMail::ListUserorg::userorg_id(user_id)
+      controller = "Template"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @templates = Template.find(orglist)
+    
+      controller = "List"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @lists = List.find(orglist)
+    end
+    user_action_log(params[:id],params[:controller],"edit")
   end
 
   def create
@@ -56,8 +115,24 @@ class CampaignsController < ApplicationController
       end
     end
 
+    user_id = current_user.id
+    userids = [6,7,8,9,10,12,13]
+    if userids.index(user_id.to_i) != nil then
+      @lists = List.all
+      @templates = Template.all
+    else
+      controller = "Template"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @templates = Template.find(orglist)
+    
+      controller = "List"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @lists = List.find(orglist)
+    end
+
     respond_to do |format|
       if @campaign.save
+        user_action_log(@campaign.id,params[:controller],"create")
         format.html { redirect_to @campaign, notice: 'Campaign was successfully created.' }
         format.js
       else
@@ -86,9 +161,25 @@ class CampaignsController < ApplicationController
         Resque.enqueue_at(strdatetime, Sendmail_Job, params[:id], current_user.id)
       end
     end
+
+    user_id = current_user.id
+    userids = [6,7,8,9,10,12,13]
+    if userids.index(user_id.to_i) != nil then
+      @lists = List.all
+      @templates = Template.all
+    else
+      controller = "Template"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @templates = Template.find(orglist)
     
+      controller = "List"
+      orglist = FocusMail::ListUserorg::userorg_list(user_id, controller)
+      @lists = List.find(orglist)
+    end
+
     respond_to do |format|
       if @campaign.update_attributes(params[:campaign])
+        user_action_log(params[:id],params[:controller],"update")
         format.html { redirect_to @campaign, notice: 'Campaign was successfully updated.' }
         format.js
       else
@@ -101,6 +192,7 @@ class CampaignsController < ApplicationController
   def destroy
     @campaign = Campaign.find(params[:id])
     @campaign.destroy
+    user_action_log(params[:id],params[:controller],"delete")
 
     respond_to do |format|
       format.html { redirect_to campaigns_url }
@@ -119,10 +211,12 @@ class CampaignsController < ApplicationController
     to_name = ""
     template_img_url = @campaign.template.img_url
     email_one_template(from_email, from, to_email, to_name, subject, @campaign.id, @campaign.template.id, @campaign.template.img_url,current_user.id)
+    user_action_log(params[:id],params[:controller],"mailtest")
   end
 
   def deliver
     Resque.enqueue(Sendmail_Job, params[:id], current_user.id)
+    user_action_log(params[:id],params[:controller],"deliver")
     #@campaign = Campaign.find(params[:id])
     #from_name = @campaign.from_name
     #puts "from_name: " + from_name.to_s
@@ -173,6 +267,7 @@ class CampaignsController < ApplicationController
     @template = Template.find(params[:t_id])
     # because sometime @campaign does not exist when it's a new one
     @campaign = Campaign.find_by_id(params[:c_id])
+    user_action_log(params[:c_id],params[:controller],"template_entries")
     respond_to do |format|
       format.js
     end

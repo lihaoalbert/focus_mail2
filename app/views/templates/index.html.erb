@@ -1,29 +1,39 @@
 <%- model_class = Campaign.new.class -%>
-	<div class="main-content" style="width:100%">
+	<div class="main-content" style="width:581px;">
 		<div class="page-header">
-		  <table style="width:100%"><tr><td><h2>邮件模板</h2></td>
-		  	<td style="float:right">
-		  	  <div style="float:right">
-                <%= link_to '新建邮件模板', new_template_path, :class => 'btn btn-primary', remote: true %>
-              </div>
-		  	</td></tr></table>
-
-
+		  <h2>邮件模板</h2>
         </div>
-    <div  style="padding: 20px 20px 20px 20px">
-        <div id="templates_form">
-		</div>
         <div id="sel_mes" class="stream-content" style="display: block;">
-          <!--发送活动外包装 -->
-          <div id="templates_info">
-            <%= render @templates %>
+          <!--邮件模板外包装 -->
+          <div class="stream-manager js-stream-manager-container">
+          	<div class="js-stream-manager" id="profile-stream-manager">
+          		<div class="stream-container">
+          			<div class="stream ">
+          				<div class="js-stream-items stream-items" id="templates_info">
+          					<%= render @templates %>
+          		  		</div>
+          			</div>
+          		</div>
+          	</div>
           </div>
-
         </div>
-
-    </div> 
-
-</div>
+ 
+	</div>
+<!--   dashboard begin   -->
+    <div class="dashboard" style="width:349px; padding:20px 5px">
+    	<div class="component">
+    		<div style="float:right">
+               <%= link_to '新建邮件模板', new_template_path, :class => 'btn btn-primary', remote: true %>
+            </div>
+        </div>
+     	<hr class="component-spacer">
+    	<div class="component">
+    		<div id="form">
+              <div id="templates_form"></div>
+            </div>
+        </div>
+     	
+	</div>
 <!--   dashboard end   --> 
 <!--   details pane   --> 
 <div id="details-pane-outer">

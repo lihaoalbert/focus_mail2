@@ -37,4 +37,11 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+  def user_action_log(assetid,assettype,actionname)
+    assetid = assetid
+    assettype = assettype
+    actionname = actionname
+    userid = current_user.id
+    FocusMail::ClickLog.save_log(assetid, assettype, actionname, userid)
+  end
 end

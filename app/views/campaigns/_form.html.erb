@@ -1,6 +1,7 @@
 <%= form_for @campaign, :html => { :class => 'form-horizontal' }, remote: true do |f| %>
 
   <%= render :partial => "common/form_error", :locals => { model: @campaign} %>
+  <%= f.hidden_field :org_id %>
 
 
   <div class="tabbable">
@@ -47,7 +48,7 @@
         <div class="control-group">
           <%= f.label :list_id, "邮件列表：", :class => 'control-label' %>
           <div class="controls">
-            <% List.all.each do |list| %>
+            <% @lists.each do |list| %>
               <%= check_box_tag :list_ids, list.id, @campaign.lists.include?(list), :name => 'campaign[list_ids][]' -%>
               <%= label_tag :list_ids, :style => "display:inline" do %>
                 <%= link_to list.name, list_path(list) %>
@@ -63,7 +64,7 @@
         <div class="control-group">
           <%= f.label :template_id, :class => 'control-label' %>
           <div class="controls">
-            <%= f.select :template_id, ActiveRecord::Base::Template.all.map{|t| [t.name, t.id]}, { :include_blank => true}, {:class => "chzn-select", "data-placeholder" => "Choose a Template"} %>
+            <%= f.select :template_id, @templates.map{|t| [t.name, t.id]}, { :include_blank => true}, {:class => "chzn-select", "data-placeholder" => "Choose a Template"} %>
           </div>
         </div>
 

@@ -1,13 +1,19 @@
 class MembersController < ApplicationController
-
+  layout "appmembers"
   def index
     @list = List.find(params[:list_id])
     @members = @list.members.paginate(:page => params[:page], :per_page => 20)
+    user_action_log(0,params[:controller],"index")
+    
+    respond_to do |format|
+      format.html { render :layout => false }
+    end
   end
 
   def show
     @list = List.find(params[:list_id])
     @member = Member.find(params[:id])
+    user_action_log(params[:id],params[:controller],"show")
 
     respond_to do |format|
       format.html # show.html.erb
@@ -18,6 +24,7 @@ class MembersController < ApplicationController
   def new
     @list = List.find(params[:list_id])
     @member = @list.members.build
+    user_action_log(0,params[:controller],"new")
 
     respond_to do |format|
       format.html # new.html.erb
@@ -28,6 +35,7 @@ class MembersController < ApplicationController
   def edit
     @list = List.find(params[:list_id])
     @member = @list.members.find(params[:id])
+    user_action_log(params[:id],params[:controller],"edit")
   end
 
   def create
@@ -38,6 +46,7 @@ class MembersController < ApplicationController
       respond_to do |format|
         @member.listid = @list.id
         if @member.save
+          user_action_log(@member.id,params[:controller],"create")
           format.html { redirect_to list_member_path(@list.id, @member.id), notice: 'Member was successfully created.' }
           format.json { render json: @member, status: :created, location: @member }
         else
@@ -46,6 +55,7 @@ class MembersController < ApplicationController
         end
       end
     else
+      user_action_log(member.first.id,params[:controller],"create")
       num = ListsMembers.where(["list_id = :l and member_id = :m", { :l => @list.id, :m => member.first.id }]).count
       if num <= 0 then
         ListsMembers.create({
@@ -68,6 +78,7 @@ class MembersController < ApplicationController
     respond_to do |format|
       @member.listid = @list.id
       if @member.update_attributes(params[:member])
+        user_action_log(params[:id],params[:controller],"update")
         format.html { redirect_to list_member_path(@list.id, @member.id), notice: 'Member was successfully updated.' }
         format.json { head :no_content }
       else
@@ -81,6 +92,7 @@ class MembersController < ApplicationController
     @listsmembers = ListsMembers.where(["list_id = :l and member_id = :m", { :l => params[:list_id], :m => params[:id] }])
     ListsMembers.delete(@listsmembers.first.id)
     @list = List.find(params[:list_id])
+    user_action_log(@listsmembers.first.id,params[:controller],"delete")
     #@member = @list.members.find(params[:id])
     #@member.destroy
 
@@ -109,6 +121,10 @@ class MembersController < ApplicationController
 
   def imexport
     @list_id = params[:list_id]
+        
+    respond_to do |format|
+      format.html { render :layout => false }
+    end
   end
 
   def import
@@ -145,24 +161,53 @@ class MembersController < ApplicationController
           if num <= 0 then
             ListsMembers.create({
               :list_id => @list.id, 
-              :member_id => member.first.id
+              :member_id => member.first.id,
+              :domain => member.first.email.split("@")[1]
             })
           end
+          #重复名单显示
+          Member.get_field_array.each_with_index do |field, i|
+            p.send("#{field[0]}=", row[i])
+          end
+          p.listid = @list.id
+          p.id = member.first.id
+          p.created_at = member.first.created_at
+          @members << p
         end
       end
     else
       # import from csv
       CSV.foreach(file.store_path, :headers => true) do |row|
         p = Member.new
-        Member.get_field_array.each_with_index do |field, i|
-          p.send("#{field[0]}=", row[i])
-        end
-        if p.valid?
-          p.list = @list
-          p.save!
-          @members << p
+        member = Member.where(["email = :e", { :e => row[1] }])
+        if member.count <= 0 then
+          Member.get_field_array.each_with_index do |field, i|
+            p.send("#{field[0]}=", row[i])
+          end
+          if p.valid?
+            p.listid = @list.id
+            p.save!
+            @members << p
+          else
+            @errors["#{@counter+1}"] = p.errors
+          end
         else
-          @errors["#{@counter+1}"] = p.errors
+          num = ListsMembers.where(["list_id = :l and member_id = :m", { :l => @list.id, :m => member.first.id }]).count
+          if num <= 0 then
+            ListsMembers.create({
+              :list_id => @list.id, 
+              :member_id => member.first.id,
+              :domain => member.first.email.split("@")[1]
+            })
+          end
+          #重复名单显示
+          Member.get_field_array.each_with_index do |field, i|
+            p.send("#{field[0]}=", row[i])
+          end
+          p.listid = @list.id
+          p.id = member.first.id
+          p.created_at = member.first.created_at
+          @members << p
         end
       end
     end
